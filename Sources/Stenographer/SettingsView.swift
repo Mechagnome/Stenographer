@@ -10,15 +10,21 @@ import Stem
 
 struct SettingsView: View {
     
-    struct Content: Identifiable {
+    class Content: Identifiable, ObservableObject {
         
         let id = UUID()
         
-        @State
-        var name: String
+        lazy var name: Binding<String> = .init {
+            return self.rawValue
+        } set: { name in
+            self.rawValue = name
+        }
+        
+        
+        var rawValue: String
         
         init(name: String) {
-            self._name = .init(initialValue: name)
+            self.rawValue = name
         }
         
     }
@@ -59,14 +65,14 @@ struct SettingsView: View {
     var body: some View {
         VStack {
             Form {
-              ForEach(self.vm.contents) { content in
-                  HStack {
-                      TextField("Name", text: content.$name)
-                      SFSymbol.trashCircle.convert().onTapGesture {
-                          vm.remove(content: content)
-                      }
-                  }
-              }
+                ForEach(self.vm.contents) { content in
+                    HStack {
+                        TextField("Name", text: content.name)
+                        SFSymbol.trashCircle.convert().onTapGesture {
+                            vm.remove(content: content)
+                        }
+                    }
+                }
             }
             HStack {
                 TextField("new", text: $newText)
@@ -80,7 +86,7 @@ struct SettingsView: View {
             }
             HStack {
                 Text("done").onTapGesture {
-                    self.doneEvent(([newText] + vm.contents.map(\.name)).filter({ $0.isEmpty == false }))
+                    self.doneEvent(([newText] + vm.contents.map(\.rawValue)).filter({ $0.isEmpty == false }))
                 }
             }
         }
