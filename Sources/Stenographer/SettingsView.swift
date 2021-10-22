@@ -80,7 +80,7 @@ struct SettingsView: View {
             }
             HStack {
                 Text("done").onTapGesture {
-                    self.doneEvent(vm.contents.map(\.name))
+                    self.doneEvent(([newText] + vm.contents.map(\.name)).filter({ $0.isEmpty == false }))
                 }
             }
         }
@@ -93,6 +93,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(["dasdada", "assafafa"], doneEvent: { _ in })
+        SettingsView([], doneEvent: { print($0) })
     }
 }
